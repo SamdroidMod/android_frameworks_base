@@ -30,6 +30,13 @@ sources := \
     ProcessState.cpp \
     Static.cpp
 
+ifeq ($(BOARD_USES_ECLAIR_LIBCAMERA),true)
+  LOCAL_CFLAGS += -DUSE_ECLAIR_MEMORYDEALER
+  sources += MemoryDealerEclair.cpp
+else
+  sources += MemoryDealer.cpp
+endif
+
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)

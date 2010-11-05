@@ -17,8 +17,12 @@ LOCAL_SHARED_LIBRARIES += \
 		libbinder \
                 libcutils \
                 libutils \
-                libui \
-                libcamera_client \
-                libsurfaceflinger_client
+                libui
+
+ifneq ($(BOARD_USES_ECLAIR_LIBCAMERA),true)
+    LOCAL_SHARED_LIBRARIES += \
+	libsurfaceflinger_client \ 
+	libcamera_client
+endif
 
 include $(BUILD_EXECUTABLE)
