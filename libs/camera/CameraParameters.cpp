@@ -138,6 +138,9 @@ const char CameraParameters::FOCUS_MODE_MACRO[] = "macro";
 const char CameraParameters::FOCUS_MODE_FIXED[] = "fixed";
 const char CameraParameters::FOCUS_MODE_EDOF[] = "edof";
 
+static const char* portrait = "portrait";
+static const char* landscape = "landscape";
+
 CameraParameters::CameraParameters()
                 : mMap()
 {
