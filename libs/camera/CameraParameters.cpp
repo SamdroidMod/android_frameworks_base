@@ -315,6 +315,23 @@ void CameraParameters::setPreviewFormat(const char *format)
     set(KEY_PREVIEW_FORMAT, format);
 }
 
+int CameraParameters::getOrientation() const
+{
+    const char* orientation = get("orientation");
+    if (orientation && !strcmp(orientation, portrait))
+        return CAMERA_ORIENTATION_PORTRAIT;
+    return CAMERA_ORIENTATION_LANDSCAPE;
+}
+
+void CameraParameters::setOrientation(int orientation)
+{
+    if (orientation == CAMERA_ORIENTATION_PORTRAIT) {
+        set("orientation", portrait);
+    } else {
+        set("orientation", landscape);
+    }
+}
+
 const char *CameraParameters::getPreviewFormat() const
 {
     return get(KEY_PREVIEW_FORMAT);
