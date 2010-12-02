@@ -1495,6 +1495,11 @@ public final class RIL extends BaseCommands implements CommandsInterface {
                 = RILRequest.obtain(RIL_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC,
                                     response);
 
+        Message DeactivateDataCallMessage = null;
+        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
+            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
+        }
+
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
         send(rr);
@@ -1506,8 +1511,13 @@ public final class RIL extends BaseCommands implements CommandsInterface {
                 = RILRequest.obtain(RIL_REQUEST_SET_NETWORK_SELECTION_MANUAL,
                                     response);
 
+        Message DeactivateDataCallMessage = null;
+        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
+            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
+        }
+
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest)
-                    + " " + operatorNumeric);
+                    + " " + operatorNumeric + " " + "0");
 
         rr.mp.writeString(operatorNumeric);
 
@@ -1516,6 +1526,12 @@ public final class RIL extends BaseCommands implements CommandsInterface {
 
     public void
     getNetworkSelectionMode(Message response) {
+
+        Message DeactivateDataCallMessage = null;
+        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
+            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
+        }
+
         RILRequest rr
                 = RILRequest.obtain(RIL_REQUEST_QUERY_NETWORK_SELECTION_MODE,
                                     response);
@@ -1530,6 +1546,11 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         RILRequest rr
                 = RILRequest.obtain(RIL_REQUEST_QUERY_AVAILABLE_NETWORKS,
                                     response);
+
+        Message DeactivateDataCallMessage = null;
+        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
+            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
+        }
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
@@ -2901,7 +2922,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         if (strings.length % 5 != 0) {
             throw new RuntimeException(
                 "RIL_REQUEST_QUERY_AVAILABLE_NETWORKS: invalid response. Got "
-                + strings.length + " strings, expected multiple of 5 (Samsung, go to hell :)");
+                + strings.length + " strings, expected multiple of 5");
         }
 
         ret = new ArrayList<NetworkInfo>(strings.length / 5);
