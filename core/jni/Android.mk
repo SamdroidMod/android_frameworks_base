@@ -162,6 +162,8 @@ LOCAL_SHARED_LIBRARIES := \
 	libbinder \
 	libnetutils \
 	libui \
+	libsurfaceflinger_client \
+	libcamera_client \
 	libskiagl \
 	libskia \
 	libsqlite \
@@ -181,12 +183,6 @@ LOCAL_SHARED_LIBRARIES := \
 	libmedia \
 	libwpa_client \
 	libjpeg
-
-ifneq ($(BOARD_USES_ECLAIR_LIBCAMERA),true)
-    LOCAL_SHARED_LIBRARIES += \
-        libsurfaceflinger_client \ 
-        libcamera_client
-endif
 
 ifeq ($(BOARD_HAVE_BLUETOOTH),true)
 LOCAL_C_INCLUDES += \

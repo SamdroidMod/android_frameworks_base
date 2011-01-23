@@ -1348,15 +1348,8 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         RILRequest rr
                 = RILRequest.obtain(RIL_REQUEST_RADIO_POWER, result);
 
-        if (on)
-        {
-            rr.mp.writeInt(1);
-            rr.mp.writeInt(1);
-        } else {
-            rr.mp.writeInt(2);
-            rr.mp.writeInt(0);
-            rr.mp.writeInt(0);
-        }
+        rr.mp.writeInt(1);
+        rr.mp.writeInt(on ? 1 : 0);
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
@@ -1495,11 +1488,6 @@ public final class RIL extends BaseCommands implements CommandsInterface {
                 = RILRequest.obtain(RIL_REQUEST_SET_NETWORK_SELECTION_AUTOMATIC,
                                     response);
 
-        Message DeactivateDataCallMessage = null;
-        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
-            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
-        }
-
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
         send(rr);
@@ -1511,13 +1499,8 @@ public final class RIL extends BaseCommands implements CommandsInterface {
                 = RILRequest.obtain(RIL_REQUEST_SET_NETWORK_SELECTION_MANUAL,
                                     response);
 
-        Message DeactivateDataCallMessage = null;
-        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
-            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
-        }
-
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest)
-                    + " " + operatorNumeric + " " + "0");
+                    + " " + operatorNumeric);
 
         rr.mp.writeString(operatorNumeric);
 
@@ -1526,7 +1509,6 @@ public final class RIL extends BaseCommands implements CommandsInterface {
 
     public void
     getNetworkSelectionMode(Message response) {
-
         RILRequest rr
                 = RILRequest.obtain(RIL_REQUEST_QUERY_NETWORK_SELECTION_MODE,
                                     response);
@@ -1541,11 +1523,6 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         RILRequest rr
                 = RILRequest.obtain(RIL_REQUEST_QUERY_AVAILABLE_NETWORKS,
                                     response);
-
-        Message DeactivateDataCallMessage = null;
-        for(int DeactivateDataCallCid = 0; DeactivateDataCallCid < 5; DeactivateDataCallCid++) {
-            deactivateDataCall(DeactivateDataCallCid,DeactivateDataCallMessage);
-        }
 
         if (RILJ_LOGD) riljLog(rr.serialString() + "> " + requestToString(rr.mRequest));
 
@@ -2858,14 +2835,13 @@ public final class RIL extends BaseCommands implements CommandsInterface {
             dc.numberPresentation = DriverCall.presentationFromCLIP(np);
             dc.name = p.readString();
             dc.namePresentation = p.readInt();
-/* FIX for GT-I5700 -- Call waiting problem
             int uusInfoPresent = p.readInt();
             if (uusInfoPresent == 1) {
                 // TODO: Copy the data to dc to forward to the apps.
                 p.readInt();
                 p.readInt();
                 p.createByteArray();
-            } */
+            }
 
             // Make sure there's a leading + on addresses with a TOA of 145
             dc.number = PhoneNumberUtils.stringFromStringAndTOA(dc.number, dc.TOA);
@@ -2914,22 +2890,21 @@ public final class RIL extends BaseCommands implements CommandsInterface {
         String strings[] = (String [])responseStrings(p);
         ArrayList<NetworkInfo> ret;
 
-        if (strings.length % 5 != 0) {
+        if (strings.length % 4 != 0) {
             throw new RuntimeException(
                 "RIL_REQUEST_QUERY_AVAILABLE_NETWORKS: invalid response. Got "
-                + strings.length + " strings, expected multiple of 5");
+                + strings.length + " strings, expected multible of 4");
         }
 
-        ret = new ArrayList<NetworkInfo>(strings.length / 5);
+        ret = new ArrayList<NetworkInfo>(strings.length / 4);
 
-        for (int i = 0 ; i < strings.length ; i += 5) {
+        for (int i = 0 ; i < strings.length ; i += 4) {
             ret.add (
                 new NetworkInfo(
                     strings[i+0],
                     strings[i+1],
                     strings[i+2],
-                    strings[i+3],
-                    strings[i+4]));
+                    strings[i+3]));
         }
 
         return ret;

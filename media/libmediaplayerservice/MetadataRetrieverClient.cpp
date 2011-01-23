@@ -28,12 +28,8 @@
 #include <string.h>
 #include <cutils/atomic.h>
 #include <cutils/properties.h>
-#ifdef USE_ECLAIR_MEMORYDEALER
-#include <binder/MemoryDealer.h>
-#else
 #include <binder/MemoryBase.h>
 #include <binder/MemoryHeapBase.h>
-#endif
 #include <android_runtime/ActivityManager.h>
 #include <binder/IPCThreadState.h>
 #include <binder/IServiceManager.h>
@@ -67,10 +63,6 @@ MetadataRetrieverClient::MetadataRetrieverClient(pid_t pid)
 {
     LOGV("MetadataRetrieverClient constructor pid(%d)", pid);
     mPid = pid;
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mThumbnailDealer = NULL;
-    mAlbumArtDealer = NULL;
-#endif
     mThumbnail = NULL;
     mAlbumArt = NULL;
     mRetriever = NULL;
@@ -101,10 +93,6 @@ void MetadataRetrieverClient::disconnect()
     LOGV("disconnect from pid %d", mPid);
     Mutex::Autolock lock(mLock);
     mRetriever.clear();
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mThumbnailDealer.clear();
-    mAlbumArtDealer.clear();
-#endif
     mThumbnail.clear();
     mAlbumArt.clear();
     mMode = METADATA_MODE_FRAME_CAPTURE_AND_METADATA_RETRIEVAL;
@@ -251,9 +239,6 @@ sp<IMemory> MetadataRetrieverClient::captureFrame()
     LOGV("captureFrame");
     Mutex::Autolock lock(mLock);
     mThumbnail.clear();
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mThumbnailDealer.clear();
-#endif
     if (mRetriever == NULL) {
         LOGE("retriever is not initialized");
         return NULL;
@@ -264,27 +249,15 @@ sp<IMemory> MetadataRetrieverClient::captureFrame()
         return NULL;
     }
     size_t size = sizeof(VideoFrame) + frame->mSize;
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mThumbnailDealer = new MemoryDealer(size);
-    if (mThumbnailDealer == NULL) {
-#else
     sp<MemoryHeapBase> heap = new MemoryHeapBase(size, 0, "MetadataRetrieverClient");
     if (heap == NULL) {
-#endif
         LOGE("failed to create MemoryDealer");
         delete frame;
         return NULL;
     }
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mThumbnail = mThumbnailDealer->allocate(size);
-#else
     mThumbnail = new MemoryBase(heap, 0, size);
-#endif
     if (mThumbnail == NULL) {
         LOGE("not enough memory for VideoFrame size=%u", size);
-#ifdef USE_ECLAIR_MEMORYDEALER
-	mThumbnailDealer.clear();
-#endif
         delete frame;
         return NULL;
     }
@@ -305,9 +278,6 @@ sp<IMemory> MetadataRetrieverClient::extractAlbumArt()
     LOGV("extractAlbumArt");
     Mutex::Autolock lock(mLock);
     mAlbumArt.clear();
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mAlbumArtDealer.clear();
-#endif
     if (mRetriever == NULL) {
         LOGE("retriever is not initialized");
         return NULL;
@@ -318,27 +288,15 @@ sp<IMemory> MetadataRetrieverClient::extractAlbumArt()
         return NULL;
     }
     size_t size = sizeof(MediaAlbumArt) + albumArt->mSize;
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mAlbumArtDealer = new MemoryDealer(size);
-    if (mAlbumArtDealer == NULL) {
-#else
     sp<MemoryHeapBase> heap = new MemoryHeapBase(size, 0, "MetadataRetrieverClient");
     if (heap == NULL) {
-#endif
         LOGE("failed to create MemoryDealer object");
         delete albumArt;
         return NULL;
     }
-#ifdef USE_ECLAIR_MEMORYDEALER
-    mAlbumArt = mAlbumArtDealer->allocate(size);
-#else
     mAlbumArt = new MemoryBase(heap, 0, size);
-#endif
     if (mAlbumArt == NULL) {
         LOGE("not enough memory for MediaAlbumArt size=%u", size);
-#ifdef USE_ECLAIR_MEMORYDEALER
-	mAlbumArtDealer.clear();
-#endif
         delete albumArt;
         return NULL;
     }

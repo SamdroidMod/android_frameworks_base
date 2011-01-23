@@ -12674,8 +12674,7 @@ public final class ActivityManagerService extends ActivityManagerNative implemen
                 } else if ((flags&Intent.FLAG_RECEIVER_REGISTERED_ONLY) == 0){
                     Slog.e(TAG, "Attempt to launch receivers of broadcast intent " + intent
                             + " before boot completion");
-                    // throw new IllegalStateException("Cannot broadcast before boot completed");
-                    return BROADCAST_SUCCESS;
+                    throw new IllegalStateException("Cannot broadcast before boot completed");
                 }
             }
             

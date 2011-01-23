@@ -14,8 +14,7 @@ LOCAL_SRC_FILES:= \
     MessageQueue.cpp \
     SurfaceFlinger.cpp \
     Tokenizer.cpp \
-    Transform.cpp \
-    BufferConvert16.cpp
+    Transform.cpp
 
 LOCAL_CFLAGS:= -DLOG_TAG=\"SurfaceFlinger\"
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
@@ -39,12 +38,8 @@ LOCAL_SHARED_LIBRARIES := \
 	libEGL \
 	libGLESv1_CM \
 	libbinder \
-	libui
-
-ifneq ($(BOARD_USES_ECLAIR_LIBCAMERA),true)
-    LOCAL_SHARED_LIBRARIES += \
+	libui \
 	libsurfaceflinger_client
-endif
 
 LOCAL_C_INCLUDES := \
 	$(call include-path-for, corecg graphics)
